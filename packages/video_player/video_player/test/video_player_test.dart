@@ -69,6 +69,10 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoPlayerOptions get videoPlayerOptions => null;
+
+  @override
+  // TODO: implement dataSourceList
+  List<String> get dataSourceList => throw UnimplementedError();
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -781,11 +785,11 @@ class FakeEventsChannel {
   }
 
   void sendError(String code, [String message, dynamic details]) {
-    _sendMessage(const StandardMethodCodec().encodeErrorEnvelope(
-      code: code,
-      message: message,
-      details: details,
-    ));
+    // _sendMessage(const StandardMethodCodec().encodeErrorEnvelope(
+    //   code: code,
+    //   message: message,
+    //   details: details,
+    // ));
   }
 
   void _sendMessage(ByteData data) {

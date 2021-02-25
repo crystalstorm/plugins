@@ -3,6 +3,7 @@
 // ignore_for_file: public_member_api_docs, non_constant_identifier_names, avoid_as, unused_import
 // @dart = 2.8
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 
@@ -27,10 +28,15 @@ class TextureMessage {
 }
 
 class CreateMessage {
+
   String asset;
   String uri;
   String packageName;
   String formatHint;
+
+  String type;
+  bool isList;
+
   // ignore: unused_element
   Map<dynamic, dynamic> _toMap() {
     final Map<dynamic, dynamic> pigeonMap = <dynamic, dynamic>{};
@@ -38,6 +44,9 @@ class CreateMessage {
     pigeonMap['uri'] = uri;
     pigeonMap['packageName'] = packageName;
     pigeonMap['formatHint'] = formatHint;
+
+    pigeonMap['type'] = type;
+    pigeonMap['isList'] = isList;
     return pigeonMap;
   }
 
@@ -51,8 +60,13 @@ class CreateMessage {
     result.uri = pigeonMap['uri'];
     result.packageName = pigeonMap['packageName'];
     result.formatHint = pigeonMap['formatHint'];
+
+    result.type = pigeonMap['type'];
+    result.isList = pigeonMap['isList'] as bool;
+
     return result;
   }
+
 }
 
 class LoopingMessage {
@@ -191,6 +205,7 @@ class VideoPlayerApi {
 
   Future<TextureMessage> create(CreateMessage arg) async {
     final Map<dynamic, dynamic> requestMap = arg._toMap();
+
     const BasicMessageChannel<dynamic> channel = BasicMessageChannel<dynamic>(
         'dev.flutter.pigeon.VideoPlayerApi.create', StandardMessageCodec());
 

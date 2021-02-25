@@ -84,6 +84,14 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
   if ((NSNull *)result.formatHint == [NSNull null]) {
     result.formatHint = nil;
   }
+    
+    result.type = dict[@"type"];
+    if ((NSNull *)result.type == [NSNull null]) {
+      result.type = nil;
+    }
+    
+    result.isList = [[dict objectForKey:@"isList"] boolValue];
+    
   return result;
 }
 - (NSDictionary *)toMap {
@@ -93,7 +101,10 @@ static NSDictionary *wrapResult(NSDictionary *result, FlutterError *error) {
                                    (self.packageName ? self.packageName : [NSNull null]),
                                    @"packageName",
                                    (self.formatHint ? self.formatHint : [NSNull null]),
-                                   @"formatHint", nil];
+                                   @"formatHint",
+          (self.type ? self.type : [NSNull null]), @"type",
+          self.isList, @"isList",
+          nil];
 }
 @end
 

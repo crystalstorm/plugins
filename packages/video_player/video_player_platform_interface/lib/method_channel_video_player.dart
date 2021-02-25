@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:ui';
+import 'dart:core';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -29,19 +30,76 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   Future<int> create(DataSource dataSource) async {
     CreateMessage message = CreateMessage();
 
+    message.isList = false;
+
     switch (dataSource.sourceType) {
       case DataSourceType.asset:
         message.asset = dataSource.asset;
         message.packageName = dataSource.package;
+        message.type = "asset";
         break;
       case DataSourceType.network:
         message.uri = dataSource.uri;
         message.formatHint = _videoFormatStringMap[dataSource.formatHint];
+        message.type = "network";
         break;
       case DataSourceType.file:
         message.uri = dataSource.uri;
+        message.type = "file";
         break;
     }
+
+    TextureMessage response = await _api.create(message);
+    return response.textureId;
+  }
+
+  @override
+  Future<int> createList(List<DataSource> dataSources) async {
+
+    CreateMessage message = CreateMessage();
+
+    List<String> uris = [];
+    List<String> hints = [];
+    List<String> assets = [];
+    List<String> packages = [];
+    for (final item in dataSources) {
+
+      switch (item.sourceType) {
+        case DataSourceType.asset:
+          assets.add(item.asset);
+          if(item.package != null) {
+            packages.add(item.package);
+          }
+          break;
+        case DataSourceType.network:
+          uris.add(item.uri);
+          hints.add( _videoFormatStringMap[item.formatHint] );
+          break;
+        case DataSourceType.file:
+          uris.add(item.uri);
+          break;
+      }
+    }
+
+    DataSource firstItem = dataSources[0];
+    switch (firstItem.sourceType) {
+      case DataSourceType.asset:
+        message.asset = assets.join(",");
+        message.packageName = packages.join(",");
+        message.type = "asset";
+        break;
+      case DataSourceType.network:
+        message.uri = uris.join(",");
+        message.formatHint = hints.join(",");
+        message.type = "network";
+        break;
+      case DataSourceType.file:
+        message.uri = uris.join(",");
+        message.type = "file";
+        break;
+    }
+
+    message.isList = true;
 
     TextureMessage response = await _api.create(message);
     return response.textureId;
