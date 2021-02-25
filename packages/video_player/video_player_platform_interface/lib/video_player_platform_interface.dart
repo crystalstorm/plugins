@@ -70,6 +70,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('create() has not been implemented.');
   }
 
+  /// Creates an instance of a video player, with list of DataSource-s and returns its textureId.
+  Future<int> createList(List<DataSource> dataSources) {
+    throw UnimplementedError('create() has not been implemented.');
+  }
+
   /// Returns a Stream of [VideoEventType]s.
   Stream<VideoEvent> videoEventsFor(int textureId) {
     throw UnimplementedError('videoEventsFor() has not been implemented.');

@@ -94,6 +94,14 @@ static NSDictionary<NSString *, id> *wrapResult(NSDictionary *result, FlutterErr
   if ((NSNull *)result.httpHeaders == [NSNull null]) {
     result.httpHeaders = nil;
   }
+    
+    result.type = dict[@"type"];
+    if ((NSNull *)result.type == [NSNull null]) {
+      result.type = nil;
+    }
+    
+    result.isList = [[dict objectForKey:@"isList"] boolValue];
+    
   return result;
 }
 - (NSDictionary *)toMap {
@@ -106,6 +114,9 @@ static NSDictionary<NSString *, id> *wrapResult(NSDictionary *result, FlutterErr
                                    @"formatHint",
                                    (self.httpHeaders ? self.httpHeaders : [NSNull null]),
                                    @"httpHeaders", nil];
+          (self.type ? self.type : [NSNull null]), @"type",
+          self.isList, @"isList",
+          nil];
 }
 @end
 

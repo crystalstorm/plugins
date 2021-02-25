@@ -7,6 +7,7 @@
 // ignore_for_file: public_member_api_docs, non_constant_identifier_names, avoid_as, unused_import
 // @dart = 2.12
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'dart:typed_data' show Uint8List, Int32List, Int64List, Float64List;
 
 import 'package:flutter/services.dart';
@@ -35,11 +36,17 @@ class CreateMessage {
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+  String type;
+  bool isList;
+
     pigeonMap['asset'] = asset;
     pigeonMap['uri'] = uri;
     pigeonMap['packageName'] = packageName;
     pigeonMap['formatHint'] = formatHint;
     pigeonMap['httpHeaders'] = httpHeaders;
+
+    pigeonMap['type'] = type;
+    pigeonMap['isList'] = isList;
     return pigeonMap;
   }
 
@@ -51,7 +58,12 @@ class CreateMessage {
       ..packageName = pigeonMap['packageName'] as String?
       ..formatHint = pigeonMap['formatHint'] as String?
       ..httpHeaders = pigeonMap['httpHeaders'] as Map<Object?, Object?>?;
+
+    result.type = pigeonMap['type'];
+    result.isList = pigeonMap['isList'] as bool;
+
   }
+
 }
 
 class LoopingMessage {
@@ -174,6 +186,7 @@ class VideoPlayerApi {
   Future<TextureMessage> create(CreateMessage arg) async {
     final Object encoded = arg.encode();
     const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+
         'dev.flutter.pigeon.VideoPlayerApi.create', StandardMessageCodec());
     final Map<Object?, Object?>? replyMap =
         await channel.send(encoded) as Map<Object?, Object?>?;

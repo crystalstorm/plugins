@@ -123,8 +123,64 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
         new EventChannel(
             flutterState.binaryMessenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
 
-    VideoPlayer player;
-    if (arg.getAsset() != null) {
+    VideoPlayer player = null;
+
+    if(arg.getIsList()) {
+      switch (arg.getType()) {
+        case "asset":
+          String[] assetList = arg.getAssetList();
+          String[] assetUriSToPass = new String[assetList.length];
+          for (int i = 0; i < assetList.length; i++) {
+            String assetUri = assetList[i];
+            String assetLookupKey;
+            if (arg.getPackageList() != null && arg.getPackageList().length > 0) {
+              assetLookupKey =
+                      flutterState.keyForAssetAndPackageName.get(assetUri, arg.getPackageList()[i]);
+            } else {
+              assetLookupKey = flutterState.keyForAsset.get(assetUri);
+            }
+
+            assetUriSToPass[i] = "asset:///" + assetLookupKey;
+          }
+
+          player =
+                  new VideoPlayer(
+                          flutterState.applicationContext,
+                          eventChannel,
+                          handle,
+                          null,
+                          assetUriSToPass,
+                          null,
+                          options);
+
+          break;
+
+        case "network":
+          String[] uriList = arg.getUriList();
+          String formatHint = null;
+          if(arg.getHintList() != null && arg.getHintList().length > 0) {
+            formatHint = arg.getHintList()[0];
+          }
+
+          for (int i = 0; i < uriList.length; i++) {
+            String uri = uriList[i];
+          }
+
+          player =
+                  new VideoPlayer(
+                          flutterState.applicationContext,
+                          eventChannel,
+                          handle,
+                          null,
+                          uriList,
+                          formatHint,
+                          options);
+
+          break;
+          //TODO: implement file case
+      }
+    }
+    else if (arg.getAsset() != null) {
       String assetLookupKey;
       if (arg.getPackageName() != null) {
         assetLookupKey =
@@ -132,12 +188,16 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
       } else {
         assetLookupKey = flutterState.keyForAsset.get(arg.getAsset());
       }
+
+      String key = "asset:///" + assetLookupKey;
+
       player =
           new VideoPlayer(
               flutterState.applicationContext,
               eventChannel,
               handle,
-              "asset:///" + assetLookupKey,
+                  key,
+              null,
               null,
               null,
               options);
@@ -150,6 +210,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               eventChannel,
               handle,
               arg.getUri(),
+                  null,
               arg.getFormatHint(),
               httpHeaders,
               options);

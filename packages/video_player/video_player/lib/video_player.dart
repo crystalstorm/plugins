@@ -189,6 +189,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         formatHint = null,
         httpHeaders = const {},
         super(VideoPlayerValue(duration: Duration.zero));
+        dataSourceList= null,
+        super(VideoPlayerValue(duration: null));
+
+
+  /// Constructs a [VideoPlayerController] playing a video from a list of assets.
+  ///
+  /// The name of the asset is given by the [dataSourceList] argument and must not be
+  /// null. The [package] argument must be non-null when the asset comes from a
+  /// package and null otherwise.
+  VideoPlayerController.assetList(this.dataSourceList,
+      {this.package, this.closedCaptionFile, this.videoPlayerOptions})
+      : dataSourceType = DataSourceType.asset,
+        formatHint = null,
+        dataSource= null,
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
   /// the network.
@@ -207,7 +221,23 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     this.httpHeaders = const {},
   })  : dataSourceType = DataSourceType.network,
         package = null,
+        dataSourceList= null,
         super(VideoPlayerValue(duration: Duration.zero));
+
+
+  /// Constructs a [VideoPlayerController] playing a video from obtained from
+  /// the network.
+  ///
+  /// The URIs for the videos is given by the [dataSourceList] argument and must not be
+  /// null.
+  /// **Android only**: The [formatHint] option allows the caller to override
+  /// the video format detection code.
+  VideoPlayerController.networkList(this.dataSourceList,
+      {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions})
+      : dataSourceType = DataSourceType.network,
+        package = null,
+        dataSource= null,
+
 
   /// Constructs a [VideoPlayerController] playing a video from a file.
   ///
@@ -220,7 +250,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         package = null,
         formatHint = null,
         httpHeaders = const {},
+        dataSourceList= null,
         super(VideoPlayerValue(duration: Duration.zero));
+
+  /// The URIs to the video files. This will be in different formats depending on
+  /// the [DataSourceType] of the original video.
+  final List<String> dataSourceList;
+
 
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
@@ -276,21 +312,57 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _creatingCompleter = Completer<void>();
 
     late DataSource dataSourceDescription;
+
+    bool isList = false;
+    List<DataSource> dataSources = [];
+
     switch (dataSourceType) {
       case DataSourceType.asset:
-        dataSourceDescription = DataSource(
-          sourceType: DataSourceType.asset,
-          asset: dataSource,
-          package: package,
-        );
+
+        if(dataSourceList != null) {
+          isList = true;
+
+          for(String item in dataSourceList) {
+            dataSources.add(
+                DataSource(
+                  sourceType: DataSourceType.asset,
+                  asset: item,
+                  package: package,
+                )
+            );
+          }
+        }
+        else {
+          dataSourceDescription = DataSource(
+            sourceType: DataSourceType.asset,
+            asset: dataSource,
+            package: package,
+          );
+        }
         break;
       case DataSourceType.network:
-        dataSourceDescription = DataSource(
-          sourceType: DataSourceType.network,
-          uri: dataSource,
-          formatHint: formatHint,
+
+        if(dataSourceList != null) {
+          isList = true;
+
+          for(String item in dataSourceList) {
+            dataSources.add(
+                DataSource(
+                  sourceType: DataSourceType.network,
+                  uri: item,
+                  formatHint: formatHint,
+                )
+            );
+          }
+        }
+        else {
+          dataSourceDescription = DataSource(
+            sourceType: DataSourceType.network,
+            uri: dataSource,
+            formatHint: formatHint,
           httpHeaders: httpHeaders,
-        );
+          );
+        }
         break;
       case DataSourceType.file:
         dataSourceDescription = DataSource(
@@ -305,9 +377,19 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           .setMixWithOthers(videoPlayerOptions!.mixWithOthers);
     }
 
+    
+    if(isList) {
+      _textureId = await _videoPlayerPlatform.createList(dataSources);
+    }
+    else {
+    // TODO: merge conflict - problems!
     _textureId = (await _videoPlayerPlatform.create(dataSourceDescription)) ??
         kUninitializedTextureId;
     _creatingCompleter!.complete(null);
+    
+      //_textureId = await _videoPlayerPlatform.create(dataSourceDescription);
+    }
+
     final Completer<void> initializingCompleter = Completer<void>();
 
     void eventListener(VideoEvent event) {

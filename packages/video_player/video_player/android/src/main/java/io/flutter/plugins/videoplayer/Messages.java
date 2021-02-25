@@ -53,9 +53,9 @@ public class Messages {
       return asset;
     }
 
-    public void setAsset(String setterArg) {
-      this.asset = setterArg;
-    }
+//    public void setAsset(String setterArg) {
+//      this.asset = setterArg;
+//    }
 
     private String uri;
 
@@ -63,9 +63,9 @@ public class Messages {
       return uri;
     }
 
-    public void setUri(String setterArg) {
-      this.uri = setterArg;
-    }
+//    public void setUri(String setterArg) {
+//      this.uri = setterArg;
+//    }
 
     private String packageName;
 
@@ -73,9 +73,9 @@ public class Messages {
       return packageName;
     }
 
-    public void setPackageName(String setterArg) {
-      this.packageName = setterArg;
-    }
+//    public void setPackageName(String setterArg) {
+//      this.packageName = setterArg;
+//    }
 
     private String formatHint;
 
@@ -83,9 +83,27 @@ public class Messages {
       return formatHint;
     }
 
-    public void setFormatHint(String setterArg) {
-      this.formatHint = setterArg;
-    }
+//    public void setFormatHint(String setterArg) {
+//      this.formatHint = setterArg;
+//    }
+
+    private  boolean isList;
+    public boolean getIsList() { return isList; };
+
+    private  String type;
+    public String getType() { return type; }
+
+    private String[] uriList;
+    public String[] getUriList() {return uriList; }
+
+    private String[] assetList;
+    public String[] getAssetList() {return assetList; }
+
+    private String[] packageList;
+    public String[] getPackageList() {return packageList; }
+
+    private String[] hintList;
+    public String[] getHintList() {return hintList; }
 
     private HashMap httpHeaders;
 
@@ -109,6 +127,7 @@ public class Messages {
 
     static CreateMessage fromMap(HashMap map) {
       CreateMessage fromMapResult = new CreateMessage();
+
       Object asset = map.get("asset");
       fromMapResult.asset = (String) asset;
       Object uri = map.get("uri");
@@ -119,6 +138,32 @@ public class Messages {
       fromMapResult.formatHint = (String) formatHint;
       Object httpHeaders = map.get("httpHeaders");
       fromMapResult.httpHeaders = (HashMap) httpHeaders;
+
+      boolean isList = (boolean) map.get("isList");
+      fromMapResult.isList = isList;
+      String type = (String) map.get("type");
+      fromMapResult.type = type;
+
+      if(isList) {
+        switch (type) {
+          case "asset":
+            fromMapResult.assetList = fromMapResult.asset.split(",");
+            if(fromMapResult.packageName != null && fromMapResult.packageName.length() > 0) {
+              fromMapResult.packageList = fromMapResult.packageName.split(",");
+            }
+            break;
+          case "network":
+            fromMapResult.uriList = fromMapResult.uri.split(",");
+            if(fromMapResult.formatHint != null && fromMapResult.formatHint.length() > 0) {
+              fromMapResult.hintList = fromMapResult.formatHint.split(",");
+            }
+            break;
+          case "file":
+            fromMapResult.uriList = fromMapResult.uri.split(",");
+            break;
+        }
+      }
+
       return fromMapResult;
     }
   }

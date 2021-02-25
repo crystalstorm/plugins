@@ -9,6 +9,7 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -44,6 +45,7 @@ final class VideoPlayer {
   private static final String FORMAT_DASH = "dash";
   private static final String FORMAT_HLS = "hls";
   private static final String FORMAT_OTHER = "other";
+  private static final String TAG = VideoPlayer.class.getName();
 
   private SimpleExoPlayer exoPlayer;
 
@@ -64,6 +66,7 @@ final class VideoPlayer {
       EventChannel eventChannel,
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
+      String[] dataSourceList,
       String formatHint,
       Map<String, String> httpHeaders,
       VideoPlayerOptions options) {
@@ -73,17 +76,36 @@ final class VideoPlayer {
 
     exoPlayer = new SimpleExoPlayer.Builder(context).build();
 
-    Uri uri = Uri.parse(dataSource);
+    if(dataSourceList != null) {
+
+      for (int i = 0; i < dataSourceList.length; i++) {
+        String dataSrcUri = dataSourceList[i];
+        MediaSource mediaSource = createMediaSourceInitially(dataSrcUri, context, formatHint);
+        exoPlayer.addMediaSource(mediaSource);
+      }
+    }
+    else {
+      MediaSource mediaSource = createMediaSourceInitially(dataSource, context, formatHint);
+      exoPlayer.setMediaSource(mediaSource);
+    }
+
+    exoPlayer.prepare();
+
+    setupVideoPlayer(eventChannel, textureEntry);
+  }
+
+  private MediaSource createMediaSourceInitially(String dataSourceUri, Context context, String formatHint) {
+    Uri uri = Uri.parse(dataSourceUri);
 
     DataSource.Factory dataSourceFactory;
     if (isHTTP(uri)) {
       DefaultHttpDataSourceFactory httpDataSourceFactory =
-          new DefaultHttpDataSourceFactory(
-              "ExoPlayer",
-              null,
-              DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-              DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-              true);
+              new DefaultHttpDataSourceFactory(
+                      "ExoPlayer",
+                      null,
+                      DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                      DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+                      true);
       if (httpHeaders != null && !httpHeaders.isEmpty()) {
         httpDataSourceFactory.getDefaultRequestProperties().set(httpHeaders);
       }
@@ -93,10 +115,8 @@ final class VideoPlayer {
     }
 
     MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
-    exoPlayer.setMediaSource(mediaSource);
-    exoPlayer.prepare();
 
-    setupVideoPlayer(eventChannel, textureEntry);
+    return mediaSource;
   }
 
   private static boolean isHTTP(Uri uri) {
@@ -110,7 +130,8 @@ final class VideoPlayer {
   private MediaSource buildMediaSource(
       Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
     int type;
-    if (formatHint == null) {
+
+    if (formatHint == null || formatHint == "null") {
       type = Util.inferContentType(uri.getLastPathSegment());
     } else {
       switch (formatHint) {
@@ -127,7 +148,9 @@ final class VideoPlayer {
           type = C.TYPE_OTHER;
           break;
         default:
-          type = -1;
+//          type = -1;
+          type = Util.inferContentType(uri.getLastPathSegment());
+//          Log.d(TAG, "======== trying to recover unrecognized type; type="+type) ;
           break;
       }
     }
@@ -150,6 +173,7 @@ final class VideoPlayer {
             .createMediaSource(MediaItem.fromUri(uri));
       default:
         {
+          Log.e(TAG, "Unsupported type: " + type);
           throw new IllegalStateException("Unsupported type: " + type);
         }
     }
