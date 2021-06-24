@@ -188,9 +188,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
         httpHeaders = const {},
+        dataSourceList= const [],
         super(VideoPlayerValue(duration: Duration.zero));
-        dataSourceList= null,
-        super(VideoPlayerValue(duration: null));
 
 
   /// Constructs a [VideoPlayerController] playing a video from a list of assets.
@@ -202,7 +201,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       {this.package, this.closedCaptionFile, this.videoPlayerOptions})
       : dataSourceType = DataSourceType.asset,
         formatHint = null,
-        dataSource= null,
+        dataSource= "",
+        httpHeaders = const {},
+        super(VideoPlayerValue(duration: Duration.zero));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
   /// the network.
@@ -221,7 +222,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     this.httpHeaders = const {},
   })  : dataSourceType = DataSourceType.network,
         package = null,
-        dataSourceList= null,
+        dataSourceList= const [],
         super(VideoPlayerValue(duration: Duration.zero));
 
 
@@ -236,7 +237,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       {this.formatHint, this.closedCaptionFile, this.videoPlayerOptions})
       : dataSourceType = DataSourceType.network,
         package = null,
-        dataSource= null,
+        dataSource= "",
+        this.httpHeaders = const {},
+        super(VideoPlayerValue(duration: Duration.zero));
 
 
   /// Constructs a [VideoPlayerController] playing a video from a file.
@@ -250,7 +253,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         package = null,
         formatHint = null,
         httpHeaders = const {},
-        dataSourceList= null,
+        dataSourceList= const [],
         super(VideoPlayerValue(duration: Duration.zero));
 
   /// The URIs to the video files. This will be in different formats depending on

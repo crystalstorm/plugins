@@ -65,7 +65,11 @@ static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
+  
+- (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
   return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:nil];
+}
 
 - (void)addObservers:(AVPlayerItem*)item {
   [item addObserver:self
@@ -623,10 +627,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
           singleUrl = [self createUrlFromAssetPath:input.asset isFile:true packageName:input.packageName];
         } else if (input.uri) {
           singleUrl = [self createUrlFromAssetPath:input.uri isFile:false packageName:nil];
-                                    frameUpdater:frameUpdater
-                                     httpHeaders:input.httpHeaders];
+
+        }
         AVPlayerItem* item = [AVPlayerItem playerItemWithURL:singleUrl];
-        player = [[FLTVideoPlayer alloc] initWithPlayerItem:item frameUpdater:frameUpdater];
+        player = [[FLTVideoPlayer alloc] initWithPlayerItem:item frameUpdater:frameUpdater ];
+            //                                    frameUpdater:frameUpdater
+            //                                     httpHeaders:input.httpHeaders];
     }
     
 //    player = [[FLTVideoPlayer alloc] initWithURL:singleUrl frameUpdater:frameUpdater];

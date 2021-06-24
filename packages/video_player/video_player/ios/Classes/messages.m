@@ -113,7 +113,7 @@ static NSDictionary<NSString *, id> *wrapResult(NSDictionary *result, FlutterErr
                                    (self.formatHint ? self.formatHint : [NSNull null]),
                                    @"formatHint",
                                    (self.httpHeaders ? self.httpHeaders : [NSNull null]),
-                                   @"httpHeaders", nil];
+                                   @"httpHeaders",
           (self.type ? self.type : [NSNull null]), @"type",
           self.isList, @"isList",
           nil];

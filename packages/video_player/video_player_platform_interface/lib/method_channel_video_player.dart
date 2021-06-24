@@ -67,17 +67,19 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
 
       switch (item.sourceType) {
         case DataSourceType.asset:
-          assets.add(item.asset);
+          assets.add(item.asset!);
           if(item.package != null) {
-            packages.add(item.package);
+            packages.add(item.package!);
           }
           break;
         case DataSourceType.network:
-          uris.add(item.uri);
-          hints.add( _videoFormatStringMap[item.formatHint] );
+          uris.add(item.uri!);
+          if(item.formatHint != null) {
+            hints.add( _videoFormatStringMap[item.formatHint]! );
+          }
           break;
         case DataSourceType.file:
-          uris.add(item.uri);
+          uris.add(item.uri!);
           break;
       }
     }
@@ -103,7 +105,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     message.isList = true;
 
     TextureMessage response = await _api.create(message);
-    return response.textureId;
+    return response.textureId!;
   }
 
   @override

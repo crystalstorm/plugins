@@ -33,11 +33,12 @@ class CreateMessage {
   String? packageName;
   String? formatHint;
   Map<Object?, Object?>? httpHeaders;
+  String? type;
+  bool? isList;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-  String type;
-  bool isList;
+
 
     pigeonMap['asset'] = asset;
     pigeonMap['uri'] = uri;
@@ -57,11 +58,9 @@ class CreateMessage {
       ..uri = pigeonMap['uri'] as String?
       ..packageName = pigeonMap['packageName'] as String?
       ..formatHint = pigeonMap['formatHint'] as String?
+      ..type = pigeonMap['type'] as String?
+      ..isList = pigeonMap['isList'] as bool
       ..httpHeaders = pigeonMap['httpHeaders'] as Map<Object?, Object?>?;
-
-    result.type = pigeonMap['type'];
-    result.isList = pigeonMap['isList'] as bool;
-
   }
 
 }

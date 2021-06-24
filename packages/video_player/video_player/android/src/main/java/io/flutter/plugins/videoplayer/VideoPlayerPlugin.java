@@ -196,7 +196,6 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               flutterState.applicationContext,
               eventChannel,
               handle,
-                  key,
               null,
               null,
               null,
@@ -212,7 +211,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               arg.getUri(),
                   null,
               arg.getFormatHint(),
-              httpHeaders,
+//              httpHeaders,
               options);
     }
     videoPlayers.put(handle.id(), player);

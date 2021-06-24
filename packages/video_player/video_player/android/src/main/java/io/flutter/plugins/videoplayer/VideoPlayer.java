@@ -68,7 +68,7 @@ final class VideoPlayer {
       String dataSource,
       String[] dataSourceList,
       String formatHint,
-      Map<String, String> httpHeaders,
+//      Map<String, String> httpHeaders,
       VideoPlayerOptions options) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
@@ -76,7 +76,7 @@ final class VideoPlayer {
 
     exoPlayer = new SimpleExoPlayer.Builder(context).build();
 
-    if(dataSourceList != null) {
+    if(dataSourceList != null && dataSourceList.length > 0) {
 
       for (int i = 0; i < dataSourceList.length; i++) {
         String dataSrcUri = dataSourceList[i];
@@ -106,9 +106,9 @@ final class VideoPlayer {
                       DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                       DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
                       true);
-      if (httpHeaders != null && !httpHeaders.isEmpty()) {
-        httpDataSourceFactory.getDefaultRequestProperties().set(httpHeaders);
-      }
+//      if (httpHeaders != null && !httpHeaders.isEmpty()) {
+//        httpDataSourceFactory.getDefaultRequestProperties().set(httpHeaders);
+//      }
       dataSourceFactory = httpDataSourceFactory;
     } else {
       dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
