@@ -23,7 +23,11 @@ flutter:
 dependencies:
 #  video_player_platform_interface: ^4.1.0
   video_player_platform_interface:
-    path: ../video_player_platform_interface
+    git:
+      url: git://github.com/crystalstorm/plugins.git
+      ref: feature/video_player_216/multiple-vids-nullsafety
+      path: packages/video_player/video_player_platform_interface
+#    path: ../video_player_platform_interface
 
   meta: ^1.3.0
 
