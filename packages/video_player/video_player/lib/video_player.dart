@@ -455,7 +455,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   @override
   Future<void> dispose() async {
     if (_creatingCompleter != null) {
-      await _creatingCompleter!.future;
+      // TODO: the next line is commented out because this future never finishes
+      // causing the dispose in the platform not to be called and crashing sequential
+      // instances of the player. Removing it was a quick fix but it should be
+      // investigated why this happens!
+
+      // await _creatingCompleter!.future;
       if (!_isDisposed) {
         _isDisposed = true;
         _timer?.cancel();
