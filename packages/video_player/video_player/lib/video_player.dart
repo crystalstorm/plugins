@@ -247,6 +247,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceList = const [],
         super(VideoPlayerValue(duration: Duration.zero));
 
+  VideoPlayerController.fileList(this.dataSourceList, {this.closedCaptionFile, this.videoPlayerOptions})
+      : dataSource = "",
+        dataSourceType = DataSourceType.file,
+        package = null,
+        formatHint = null,
+        httpHeaders = const {},
+        super(VideoPlayerValue(duration: Duration.zero));
+
   /// The URIs to the video files. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
   final List<String> dataSourceList;
@@ -315,14 +323,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           isList = true;
 
           for (String item in dataSourceList) {
-            // dataSources.add(DataSource(
-            //   sourceType: DataSourceType.asset,
-            //   asset: item,
-            //   package: package,
-            // ));
             dataSources.add(DataSource(
-              sourceType: DataSourceType.file,
-              uri: item,
+              sourceType: DataSourceType.asset,
+              asset: item,
+              package: package,
             ));
           }
         } else {
@@ -354,10 +358,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         }
         break;
       case DataSourceType.file:
-        dataSourceDescription = DataSource(
-          sourceType: DataSourceType.file,
-          uri: dataSource,
-        );
+        if (dataSourceList != null && dataSourceList.isNotEmpty) {
+          isList = true;
+
+          for (String item in dataSourceList) {
+            dataSources.add(DataSource(
+              sourceType: DataSourceType.file,
+              uri: 'file://${item}',
+            ));
+          }
+        } else {
+          dataSourceDescription = DataSource(
+            sourceType: DataSourceType.file,
+            uri: dataSource,
+          );
+        }
         break;
     }
 
