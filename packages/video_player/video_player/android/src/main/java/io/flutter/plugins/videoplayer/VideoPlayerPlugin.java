@@ -178,6 +178,18 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
 
           break;
           //TODO: implement file case
+
+        case "file":
+          String[] fileList = arg.getUriList();
+          player = new VideoPlayer(
+                          flutterState.applicationContext,
+                          eventChannel,
+                          handle,
+                          null,
+                          fileList,
+                          null,
+                          options);
+          break;
       }
     }
     else if (arg.getAsset() != null) {
