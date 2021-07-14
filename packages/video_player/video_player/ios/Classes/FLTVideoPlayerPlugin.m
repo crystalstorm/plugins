@@ -600,8 +600,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     if(input.isList) {
         if([input.type isEqual: @"asset"]) {
             urls = [input.asset componentsSeparatedByString:@","];
-        }
-        else if([input.type isEqual:@"network"]) {
+        } else if([input.type isEqual:@"network"]) {
+            urls = [input.uri componentsSeparatedByString:@","];
+        } else if([input.type isEqual:@"file"]) {
             urls = [input.uri componentsSeparatedByString:@","];
         }
         
@@ -611,7 +612,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
             if (input.asset) {
                 singleUrl = [self createUrlFromAssetPath:url isFile:true packageName:input.packageName];
             } else if (input.uri) {
-              singleUrl = [self createUrlFromAssetPath:url isFile:false packageName:nil];
+              
+                
+                singleUrl = [self createUrlFromAssetPath:url isFile:false packageName:nil];
             }
             
             AVPlayerItem* item = [AVPlayerItem playerItemWithURL:singleUrl];
